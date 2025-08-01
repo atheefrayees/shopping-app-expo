@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, Image, Button, StyleSheet } from 'react-native';
+import { View, Text, Image, Button, StyleSheet, ScrollView } from 'react-native';
 import { CartContext } from '../context/CartContext';
 
 export default function ProductScreen({ route }) {
@@ -7,20 +7,23 @@ export default function ProductScreen({ route }) {
   const { addToCart } = useContext(CartContext);
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Image source={{ uri: product.image_url }} style={styles.image} />
       <Text style={styles.title}>{product.name}</Text>
-      <Text style={styles.price}>${product.price}</Text>
-      <Text style={styles.description}>{product.description}</Text>
-      <Button title="Add to Cart" onPress={() => addToCart(product)} />
-    </View>
+      <Text style={styles.price}>${product.price.toFixed(2)}</Text>
+      <Text style={styles.description}>{product.description || 'No description provided'}</Text>
+      <View style={styles.buttonContainer}>
+        <Button title="Add to Cart" color="#FF6F00" onPress={() => addToCart(product)} />
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  image: { width: '100%', height: 300, marginBottom: 16, borderRadius: 8 },
+  container: { padding: 16, alignItems: 'center', backgroundColor: '#fff' },
+  image: { width: '100%', height: 300, borderRadius: 12, marginBottom: 16 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
-  price: { fontSize: 20, marginBottom: 8 },
-  description: { fontSize: 16, marginBottom: 16 },
+  price: { fontSize: 20, color: '#2196F3', marginBottom: 16 },
+  description: { fontSize: 16, color: '#555', textAlign: 'center', marginBottom: 24 },
+  buttonContainer: { width: '100%', marginTop: 16 },
 });

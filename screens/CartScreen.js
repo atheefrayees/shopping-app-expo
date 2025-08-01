@@ -1,16 +1,15 @@
 import React, { useContext } from 'react';
-import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { CartContext } from '../context/CartContext';
 
 export default function CartScreen({ navigation }) {
   const { cartItems, removeFromCart, clearCart } = useContext(CartContext);
-
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2);
+  const total = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2);
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <View style={styles.container}>
       {cartItems.length === 0 ? (
-        <Text>Your cart is empty</Text>
+        <Text style={styles.empty}>Your cart is empty</Text>
       ) : (
         <>
           <FlatList
@@ -18,15 +17,22 @@ export default function CartScreen({ navigation }) {
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View style={styles.item}>
-                <Text>{item.name} x {item.quantity}</Text>
+                <Text style={styles.itemName}>{item.name} x {item.quantity}</Text>
                 <Text>${(item.price * item.quantity).toFixed(2)}</Text>
-                <Button title="Remove" onPress={() => removeFromCart(item.id)} />
+                <TouchableOpacity onPress={() => removeFromCart(item.id)}>
+                  <Text style={styles.remove}>Remove</Text>
+                </TouchableOpacity>
               </View>
             )}
           />
-          <Text style={styles.total}>Total: ${total}</Text>
-          <Button title="Proceed to Checkout" onPress={() => navigation.navigate('Checkout')} />
-          <Button title="Clear Cart" onPress={clearCart} />
+          <View style={styles.totalContainer}>
+            <Text style={styles.totalText}>Total: ${total}</Text>
+          </View>
+          <View style={styles.buttons}>
+            <Button title="Checkout" color="#2196F3" onPress={() => navigation.navigate('Checkout')} />
+            <View style={{ height: 8 }} />
+            <Button title="Clear Cart" color="#888" onPress={clearCart} />
+          </View>
         </>
       )}
     </View>
@@ -34,17 +40,17 @@ export default function CartScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: '#f7f7f7' },
+  empty: { fontSize: 18, textAlign: 'center', marginTop: 40 },
   item: {
-    padding: 8,
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#fff',
+    marginBottom: 8,
+    borderRadius: 8,
   },
-  total: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginVertical: 16,
-  },
+  itemName: { fontWeight: '600', fontSize: 16 },
+  remove: { color: '#FF6F00', marginTop: 4 },
+  totalContainer: { marginVertical: 16, alignItems: 'center' },
+  totalText: { fontSize: 20, fontWeight: 'bold' },
+  buttons: { width: '100%' },
 });

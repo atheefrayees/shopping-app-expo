@@ -5,22 +5,19 @@ import { AuthContext } from '../context/AuthContext';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const { signIn, signUp } = useContext(AuthContext);
+  const [mode, setMode] = useState('login'); // or 'register'
   const [error, setError] = useState(null);
+  const { signIn, signUp } = useContext(AuthContext);
 
-  const handleSignIn = async () => {
+  const handle = async () => {
+    setError(null);
     try {
-      await signIn(email, password);
-    } catch (e) {
-      setError(e.message);
-    }
-  };
-
-  const handleSignUp = async () => {
-    try {
-      await signUp(email, password);
-      alert('Check your email for confirmation!');
+      if (mode === 'login') await signIn(email, password);
+      else {
+        await signUp(email, password);
+        alert('Check your email to confirm your account.');
+        setMode('login');
+      }
     } catch (e) {
       setError(e.message);
     }
@@ -28,35 +25,29 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        onChangeText={setPassword}
-        value={password}
-        secureTextEntry
-      />
-      {error && <Text style={{ color: 'red' }}>{error}</Text>}
-      <Button title="Sign In" onPress={handleSignIn} />
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <Text style={styles.header}>{mode === 'login' ? 'Sign In' : 'Register'}</Text>
+      <TextInput placeholder="Email" style={styles.input} value={email} onChangeText={setEmail} />
+      <TextInput placeholder="Password" style={styles.input} secureTextEntry value={password} onChangeText={setPassword} />
+      {error && <Text style={styles.error}>{error}</Text>}
+      <Button title={mode === 'login' ? 'Sign In' : 'Register'} onPress={handle} color="#2196F3" />
+      <Text style={styles.toggle} onPress={() => setMode(mode === 'login' ? 'register' : 'login')}>
+        {mode === 'login' ? "Don't have account? Register" : 'Already have account? Sign in'}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
+  container: { flex: 1, padding: 24, justifyContent: 'center', backgroundColor: '#f9f9f9' },
+  header: { fontSize: 26, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
   input: {
     borderWidth: 1,
-    borderColor: '#999',
-    padding: 8,
-    marginBottom: 12,
-    borderRadius: 4,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: '#fff',
   },
+  error: { color: 'red', marginBottom: 8, textAlign: 'center' },
+  toggle: { marginTop: 16, color: '#2196F3', textAlign: 'center' },
 });

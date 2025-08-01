@@ -1,0 +1,6 @@
+git init
+git add .
+git commit -m "Initial commit of shopping app Expo boilerplate"
+git branch -M main
+git remote add origin https://github.com/atheefrayees/shopping-app-expo
+git push -u origin main
